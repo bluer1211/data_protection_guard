@@ -1,0 +1,140 @@
+<div class="box tabular settings">
+  <p>
+    <label><%= l(:label_enable_sensitive_data_detection) %></label>
+    <%= check_box_tag 'settings[enable_sensitive_data_detection]', 1, @settings['enable_sensitive_data_detection'] %>
+    <em class="info"><%= l(:text_sensitive_data_detection_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_enable_personal_data_detection) %></label>
+    <%= check_box_tag 'settings[enable_personal_data_detection]', 1, @settings['enable_personal_data_detection'] %>
+    <em class="info"><%= l(:text_personal_data_detection_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_block_submission) %></label>
+    <%= check_box_tag 'settings[block_submission]', 1, @settings['block_submission'] %>
+    <em class="info"><%= l(:text_block_submission_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_log_violations) %></label>
+    <%= check_box_tag 'settings[log_violations]', 1, @settings['log_violations'] %>
+    <em class="info"><%= l(:text_log_violations_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_log_to_database) %></label>
+    <%= check_box_tag 'settings[log_to_database]', 1, @settings['log_to_database'] %>
+    <em class="info"><%= l(:text_log_to_database_info) %></em>
+  </p>
+
+  <fieldset class="box">
+    <legend><%= l(:label_sensitive_data_patterns) %></legend>
+    <p>
+      <label><%= l(:label_sensitive_patterns) %></label>
+      <%= text_area_tag 'settings[sensitive_patterns]', 
+          @settings['sensitive_patterns'].join("\n"), 
+          rows: 10, 
+          class: 'wiki-edit',
+          placeholder: l(:text_sensitive_patterns_placeholder) %>
+      <em class="info"><%= l(:text_sensitive_patterns_info) %></em>
+    </p>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend><%= l(:label_personal_data_patterns) %></legend>
+    <p>
+      <label><%= l(:label_personal_patterns) %></label>
+      <%= text_area_tag 'settings[personal_patterns]', 
+          @settings['personal_patterns'].join("\n"), 
+          rows: 10, 
+          class: 'wiki-edit',
+          placeholder: l(:text_personal_patterns_placeholder) %>
+      <em class="info"><%= l(:text_personal_patterns_info) %></em>
+    </p>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend><%= l(:label_exclusions) %></legend>
+    <p>
+      <label><%= l(:label_excluded_fields) %></label>
+      <%= text_field_tag 'settings[excluded_fields]', 
+          @settings['excluded_fields'].join(", "), 
+          size: 50,
+          placeholder: l(:text_excluded_fields_placeholder) %>
+      <em class="info"><%= l(:text_excluded_fields_info) %></em>
+    </p>
+
+    <p>
+      <label><%= l(:label_excluded_projects) %></label>
+      <%= text_field_tag 'settings[excluded_projects]', 
+          @settings['excluded_projects'].join(", "), 
+          size: 50,
+          placeholder: l(:text_excluded_projects_placeholder) %>
+      <em class="info"><%= l(:text_excluded_projects_info) %></em>
+    </p>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend><%= l(:label_test_pattern) %></legend>
+    <p>
+      <label><%= l(:label_test_content) %></label>
+      <%= text_area_tag 'test_content', '', rows: 5, class: 'wiki-edit' %>
+    </p>
+    <p>
+      <label><%= l(:label_test_pattern) %></label>
+      <%= text_field_tag 'test_pattern', '', size: 50 %>
+      <%= link_to l(:button_test), '#', id: 'test-pattern-btn', class: 'button' %>
+    </p>
+    <div id="test-result" style="display: none;">
+      <h4><%= l(:label_test_result) %></h4>
+      <div id="test-result-content"></div>
+    </div>
+  </fieldset>
+</div>
+
+<%= javascript_tag do %>
+  $(document).ready(function() {
+    $('#test-pattern-btn').click(function(e) {
+      e.preventDefault();
+      
+      var content = $('#test_content').val();
+      var pattern = $('#test_pattern').val();
+      
+      if (!content || !pattern) {
+        alert('<%= l(:text_please_provide_content_and_pattern) %>');
+        return;
+      }
+      
+      $.ajax({
+        url: '<%= url_for(action: :test_pattern) %>',
+        type: 'POST',
+        data: {
+          content: content,
+          pattern: pattern
+        },
+        success: function(data) {
+          if (data.success) {
+            var result = '<p><strong>匹配數量:</strong> ' + data.count + '</p>';
+            if (data.matches.length > 0) {
+              result += '<p><strong>匹配內容:</strong></p><ul>';
+              data.matches.forEach(function(match) {
+                result += '<li>' + $('<div>').text(match).html() + '</li>';
+              });
+              result += '</ul>';
+            }
+            $('#test-result-content').html(result);
+          } else {
+            $('#test-result-content').html('<p class="error">' + data.error + '</p>');
+          }
+          $('#test-result').show();
+        },
+        error: function() {
+          $('#test-result-content').html('<p class="error"><%= l(:text_test_failed) %></p>');
+          $('#test-result').show();
+        }
+      });
+    });
+  });
+<% end %>

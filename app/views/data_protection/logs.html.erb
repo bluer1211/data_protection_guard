@@ -1,0 +1,114 @@
+<div class="contextual">
+  <%= link_to l(:label_export_csv), { format: 'csv' }, class: 'icon icon-download' %>
+  <%= link_to l(:label_clear_logs), { action: :clear_logs }, method: :post, 
+      data: { confirm: l(:text_confirm_clear_logs) }, class: 'icon icon-delete' %>
+</div>
+
+<h2><%= l(:label_data_protection_logs) %></h2>
+
+<div class="filters">
+  <%= form_tag({ action: :logs }, method: :get, id: 'query_form') do %>
+    <fieldset id="filters" class="collapsible collapsed">
+      <legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
+      <div style="display: none;">
+        <table>
+          <tr>
+            <td><%= l(:field_user) %></td>
+            <td><%= select_tag :user_id, 
+                options_from_collection_for_select(User.all, :id, :name, params[:user_id]), 
+                prompt: l(:label_all), style: 'width: 200px;' %></td>
+          </tr>
+          <tr>
+            <td><%= l(:field_violation_type) %></td>
+            <td><%= select_tag :violation_type, 
+                options_for_select([
+                  [l(:label_all), ''],
+                  [l(:label_sensitive_data), 'sensitive_data'],
+                  [l(:label_personal_data), 'personal_data']
+                ], params[:violation_type]) %></td>
+          </tr>
+          <tr>
+            <td><%= l(:field_date_from) %></td>
+            <td><%= date_field_tag :from_date, params[:from_date] %></td>
+          </tr>
+          <tr>
+            <td><%= l(:field_date_to) %></td>
+            <td><%= date_field_tag :to_date, params[:to_date] %></td>
+          </tr>
+        </table>
+        <p><%= submit_tag l(:button_apply), class: 'button-small', name: nil %></p>
+      </div>
+    </fieldset>
+  <% end %>
+</div>
+
+<% if @violations.any? %>
+  <div class="autoscroll">
+    <table class="list issues">
+      <thead>
+        <tr>
+          <th><%= l(:field_created_on) %></th>
+          <th><%= l(:field_user) %></th>
+          <th><%= l(:field_violation_type) %></th>
+          <th><%= l(:field_match) %></th>
+          <th><%= l(:field_severity) %></th>
+          <th><%= l(:field_ip_address) %></th>
+          <th><%= l(:field_context) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @violations.each do |violation| %>
+          <tr class="<%= cycle('odd', 'even') %>">
+            <td><%= format_time(violation.created_at) %></td>
+            <td>
+              <% if violation.user %>
+                <%= link_to_user(violation.user) %>
+              <% else %>
+                <%= l(:label_unknown) %>
+              <% end %>
+            </td>
+            <td>
+              <span class="<%= violation.violation_type == 'sensitive_data' ? 'label label-important' : 'label label-warning' %>">
+                <%= violation.violation_type_label %>
+              </span>
+            </td>
+            <td>
+              <div class="match-content" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">
+                <%= h(violation.match_content) %>
+              </div>
+            </td>
+            <td>
+              <span class="<%= violation.severity == 'high' ? 'label label-important' : 'label label-warning' %>">
+                <%= violation.severity_label %>
+              </span>
+            </td>
+            <td><%= violation.ip_address %></td>
+            <td>
+              <% if violation.context_info.present? %>
+                <div class="context-info" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                  <%= "#{violation.context_info['model']}##{violation.context_info['id']}" %>
+                  <% if violation.context_info['field'] %>
+                    <br><%= violation.context_info['field'] %>
+                  <% end %>
+                </div>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <p class="pagination">
+    <%= l(:label_total_count, @total_count) %>
+  </p>
+<% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
+
+<%= javascript_tag do %>
+  $(document).ready(function() {
+    // 展開過濾器
+    $('#filters').removeClass('collapsed').find('div').show();
+  });
+<% end %>

@@ -1,0 +1,103 @@
+# Data Protection Guard Plugin 範例設定
+# 複製此檔案到 config/settings.yml 並根據需要調整
+
+plugin_data_protection_guard:
+  # 基本功能開關
+  enable_sensitive_data_detection: true
+  enable_personal_data_detection: true
+  block_submission: true
+  log_violations: true
+  log_to_database: true
+
+  # 機敏資料偵測規則
+  sensitive_patterns:
+    # FTP/SFTP/SSH 連線
+    - 'ftp://[^\s]+'
+    - 'sftp://[^\s]+'
+    - 'ssh://[^\s]+'
+    
+    # 密碼相關
+    - '\b(?:password|pwd|passwd)\s*[:=]\s*[^\s]+'
+    - '\b(?:secret|key|token)\s*[:=]\s*[^\s]+'
+    
+    # API 金鑰
+    - '\b(?:api_key|api_token|access_token|secret_key)\s*[:=]\s*[^\s]+'
+    - '\b(?:bearer|oauth)\s+[^\s]+'
+    
+    # 內部 IP 位址
+    - '\b(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)\d+\.\d+\b'
+    - '\b(?:localhost|127\.0\.0\.1)\b'
+    
+    # 資料庫連線
+    - '\b(?:mysql|postgresql|mongodb|redis)://[^\s]+'
+    - '\b(?:jdbc|odbc):[^\s]+'
+    
+    # 使用者帳號
+    - '\b(?:root@|admin@)[^\s]+'
+    - '\b(?:user|username)\s*[:=]\s*[^\s]+'
+    
+    # 憑證和私鑰
+    - '\b(?:BEGIN|END)\s+(?:RSA|DSA|EC)\s+PRIVATE KEY\b'
+    - '\b(?:BEGIN|END)\s+CERTIFICATE\b'
+    - '\b(?:BEGIN|END)\s+(?:CERTIFICATE REQUEST|NEW CERTIFICATE REQUEST)\b'
+    
+    # 內部網域
+    - '\b(?:internal|local|dev|test|staging)\.[^\s]+\b'
+    - '\b(?:\.local|\.internal|\.dev|\.test)\b'
+
+  # 個人資料偵測規則
+  personal_patterns:
+    # 台灣身分證號
+    - '\b[A-Z]\d{9}\b'
+    
+    # 護照號碼
+    - '\b[A-Z]\d{8}\b'
+    
+    # 信用卡號
+    - '\b\d{4}-\d{4}-\d{4}-\d{4}\b'
+    - '\b\d{4}\s\d{4}\s\d{4}\s\d{4}\b'
+    
+    # 銀行帳號
+    - '\b\d{10,16}\b'
+    
+    # 電話號碼
+    - '\b\d{2,4}-\d{3,4}-\d{4}\b'
+    - '\b\d{2,4}\s\d{3,4}\s\d{4}\b'
+    - '\b09\d{2}-\d{3}-\d{3}\b'
+    
+    # 電子郵件
+    - '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    
+    # 出生日期
+    - '\b\d{4}-\d{2}-\d{2}\b'
+    - '\b\d{4}/\d{2}/\d{2}\b'
+    
+    # 台灣地址
+    - '\b(?:台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)[^\s]*\b'
+    
+    # 姓名（簡單模式）
+    - '\b[A-Z][a-z]+\s+[A-Z][a-z]+\b'
+    
+    # 統一編號
+    - '\b\d{8}\b'
+
+  # 排除設定
+  excluded_fields:
+    - subject
+    - tracker_id
+    - status_id
+    - priority_id
+    - assigned_to_id
+    - category_id
+    - fixed_version_id
+    - parent_id
+    - start_date
+    - due_date
+    - estimated_hours
+    - done_ratio
+
+  # 排除專案（專案識別碼）
+  excluded_projects:
+    - test-project
+    - demo-project
+    - sandbox

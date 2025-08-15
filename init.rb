@@ -1,0 +1,98 @@
+# frozen_string_literal: true
+
+# Redmine Data Protection Guard Plugin
+# Copyright (C) 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+require 'redmine'
+
+Redmine::Plugin.register :data_protection_guard do
+  name 'Data Protection Guard'
+  author 'Redmine Data Protection Team'
+  description '防止機敏資料與個人資料的提交與儲存'
+  version '1.0.0'
+  url 'https://github.com/redmine/data_protection_guard'
+  author_url 'https://github.com/redmine'
+
+  # 設定權限
+  project_module :data_protection do
+    permission :view_data_protection_logs, { data_protection: [:logs] }
+    permission :manage_data_protection_settings, { data_protection: [:settings] }
+  end
+
+  # 設定選單
+  menu :admin_menu, :data_protection, { controller: 'data_protection', action: 'settings' }, 
+       caption: :label_data_protection, html: { class: 'icon icon-security' }
+
+  # 設定
+  settings default: {
+    'enable_sensitive_data_detection' => true,
+    'enable_personal_data_detection' => true,
+    'block_submission' => true,
+    'log_violations' => true,
+    'sensitive_patterns' => [
+      'ftp://[^\\s]+',
+      'sftp://[^\\s]+',
+      'ssh://[^\\s]+',
+      '\\b(?:password|pwd|passwd)\\s*[:=]\\s*[^\\s]+',
+      '\\b(?:api_key|api_token|access_token|secret_key)\\s*[:=]\\s*[^\\s]+',
+      '\\b(?:192\\.168\\.|10\\.|172\\.(?:1[6-9]|2[0-9]|3[0-1])\\.)\\d+\\.\\d+\\b',
+      '\\b(?:localhost|127\\.0\\.0\\.1)\\b',
+      '\\b(?:root@|admin@)[^\\s]+',
+      '\\b(?:mysql|postgresql|mongodb)://[^\\s]+',
+      '\\b(?:BEGIN|END)\\s+(?:RSA|DSA|EC)\\s+PRIVATE KEY\\b',
+      '\\b(?:BEGIN|END)\\s+CERTIFICATE\\b'
+    ],
+    'personal_patterns' => [
+      '\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b',  # 姓名
+      '\\b[A-Z]\\d{9}\\b',  # 身分證號
+      '\\b[A-Z]\\d{8}\\b',  # 護照號碼
+      '\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b',  # 信用卡號
+      '\\b\\d{10,16}\\b',  # 銀行帳號
+      '\\b\\d{2,4}-\\d{3,4}-\\d{4}\\b',  # 電話號碼
+      '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b',  # 電子郵件
+      '\\b\\d{4}-\\d{2}-\\d{2}\\b',  # 出生日期
+      '\\b(?:台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)[^\\s]*\\b'  # 台灣地址
+    ],
+    'excluded_fields' => ['subject', 'tracker_id', 'status_id', 'priority_id'],
+    'excluded_projects' => []
+  }, partial: 'settings/data_protection_settings'
+end
+
+# 載入插件檔案
+require_relative 'lib/data_protection_guard'
+require_relative 'lib/sensitive_data_validator'
+require_relative 'lib/personal_data_validator'
+require_relative 'lib/data_protection_logger'
+
+Rails.application.reloader.to_prepare do
+  # 載入控制器
+  require_relative 'app/controllers/data_protection_controller'
+  
+  # 載入模型擴展
+  require_relative 'lib/extensions/issue'
+  require_relative 'lib/extensions/journal'
+  require_relative 'lib/extensions/attachment'
+  
+  # 載入驗證器
+  require_relative 'lib/sensitive_data_validator'
+  require_relative 'lib/personal_data_validator'
+  
+  # 擴展模型
+  Issue.include DataProtectionGuard::IssueExtension if defined?(Issue)
+  Journal.include DataProtectionGuard::JournalExtension if defined?(Journal)
+  Attachment.include DataProtectionGuard::AttachmentExtension if defined?(Attachment)
+end
