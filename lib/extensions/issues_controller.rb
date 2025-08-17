@@ -7,7 +7,7 @@ module Extensions
     included do
       before_action :check_issue_data_protection, only: [:update, :create]
       before_action :check_notes_data_protection, only: [:update, :create]
-      before_action :restore_form_data, only: [:edit]
+      before_action :restore_form_data, only: [:edit, :new]
     end
 
     private
@@ -46,8 +46,13 @@ module Extensions
         # 保留表單資料
         retain_form_data
         
-        # 重新導向到編輯頁面
-        redirect_to edit_issue_path(@issue || params[:id])
+        # 重新導向到編輯頁面或新建頁面
+        if @issue&.id
+          redirect_to edit_issue_path(@issue)
+        else
+          # 如果是新建 issue，重新導向到新建頁面
+          redirect_to new_project_issue_path(@project)
+        end
         return
       end
     end
@@ -87,8 +92,13 @@ module Extensions
         # 保留表單資料
         retain_form_data
         
-        # 重新導向到編輯頁面
-        redirect_to edit_issue_path(@issue || params[:id])
+        # 重新導向到編輯頁面或新建頁面
+        if @issue&.id
+          redirect_to edit_issue_path(@issue)
+        else
+          # 如果是新建 issue，重新導向到新建頁面
+          redirect_to new_project_issue_path(@project)
+        end
         return
       end
     end
