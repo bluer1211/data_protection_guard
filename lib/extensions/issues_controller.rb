@@ -149,6 +149,10 @@ module Extensions
       # 特別處理 notes 欄位，因為它不是 Issue 模型的屬性
       if form_data['issue[notes]'].present?
         @notes = form_data['issue[notes]']
+        
+        # 將 notes 值設定到 params 中，這樣視圖就能使用它
+        params[:issue] ||= {}
+        params[:issue][:notes] = @notes
       end
       
       # 設定 JavaScript 來恢復表單資料
