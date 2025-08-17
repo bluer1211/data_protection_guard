@@ -135,7 +135,41 @@ module Extensions
       
       # 設定實例變數供視圖使用
       @restored_form_data = form_data
+      
+      # 特別處理 notes 欄位，因為它不是 Issue 模型的屬性
+      if form_data['issue[notes]'].present?
+        @notes = form_data['issue[notes]']
+      end
+      
+      # 設定 JavaScript 來恢復表單資料
+      set_form_restoration_script(form_data)
+      
       session.delete(:issue_form_data)
+    end
+
+    def set_form_restoration_script(form_data)
+      # 生成 JavaScript 來恢復表單資料
+      script = []
+      script << "<script type=\"text/javascript\">"
+      script << "$(document).ready(function() {"
+      script << "  setTimeout(function() {"
+      
+      form_data.each do |key, value|
+        if value.present?
+          script << "    var field = $('[name=\"#{key}\"]');"
+          script << "    if (field.length > 0) {"
+          script << "      field.val('#{value.gsub("'", "\\'")}');"
+          script << "      field.trigger('change');"
+          script << "    }"
+        end
+      end
+      
+      script << "  }, 100);"
+      script << "});"
+      script << "</script>"
+      
+      # 將腳本添加到 content_for :header_tags
+      content_for :header_tags, script.join("\n").html_safe
     end
   end
 end
