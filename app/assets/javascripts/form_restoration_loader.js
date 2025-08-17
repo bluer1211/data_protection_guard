@@ -1,20 +1,23 @@
-// Data Protection Guard Plugin - Form Retention JavaScript
-// 用於在資料保護違規後恢復表單資料
+// Data Protection Guard Plugin - Form Restoration Loader
+// 用於在編輯頁面載入表單恢復功能
 
 $(document).ready(function() {
+  // 檢查是否有伺服器端恢復的資料
+  if (typeof restoredFormDataJson !== 'undefined' && restoredFormDataJson) {
+    console.log('Data Protection Guard: Restoring form data from server');
+    restoreServerFormData(restoredFormDataJson);
+  }
+  
   // 檢查是否有 flash 錯誤訊息（表示有資料保護違規）
   if ($('.flash.error').length > 0) {
+    console.log('Data Protection Guard: Flash error detected, attempting form restoration');
     // 嘗試從 localStorage 恢復表單資料
     restoreFormData();
   }
   
-  // 檢查是否有伺服器端恢復的資料
-  if (typeof restoredFormDataJson !== 'undefined' && restoredFormDataJson) {
-    restoreServerFormData(restoredFormDataJson);
-  }
-  
   // 在表單提交前保存資料
   $('#issue-form').on('submit', function() {
+    console.log('Data Protection Guard: Saving form data before submission');
     saveFormData();
   });
 });
@@ -45,6 +48,7 @@ function restoreFormData() {
     
     // 檢查資料是否在 5 分鐘內保存的
     if (formData && timestamp && (Date.now() - timestamp < 300000)) {
+      console.log('Data Protection Guard: Restoring form data from localStorage');
       
       // 恢復表單資料
       Object.keys(formData).forEach(function(fieldName) {
@@ -65,24 +69,14 @@ function restoreFormData() {
       showRestoreMessage();
     }
   } catch (e) {
-    console.log('Error restoring form data:', e);
+    console.log('Data Protection Guard: Error restoring form data:', e);
   }
-}
-
-function showRestoreMessage() {
-  // 在頁面頂部顯示恢復訊息
-  var message = $('<div class="flash notice">表單資料已恢復，請修正違規內容後重新提交。</div>');
-  $('.flash.error').after(message);
-  
-  // 3 秒後自動隱藏訊息
-  setTimeout(function() {
-    message.fadeOut();
-  }, 3000);
 }
 
 function restoreServerFormData(formDataJson) {
   try {
     var formData = JSON.parse(formDataJson);
+    console.log('Data Protection Guard: Restoring server form data:', formData);
     
     // 恢復表單資料
     Object.keys(formData).forEach(function(fieldName) {
@@ -99,8 +93,19 @@ function restoreServerFormData(formDataJson) {
     showRestoreMessage();
     
   } catch (e) {
-    console.log('Error restoring server form data:', e);
+    console.log('Data Protection Guard: Error restoring server form data:', e);
   }
+}
+
+function showRestoreMessage() {
+  // 在頁面頂部顯示恢復訊息
+  var message = $('<div class="flash notice">表單資料已恢復，請修正違規內容後重新提交。</div>');
+  $('.flash.error').after(message);
+  
+  // 3 秒後自動隱藏訊息
+  setTimeout(function() {
+    message.fadeOut();
+  }, 3000);
 }
 
 // 清理舊的表單資料（超過 5 分鐘的資料）

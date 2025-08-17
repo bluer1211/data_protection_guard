@@ -148,28 +148,11 @@ module Extensions
     end
 
     def set_form_restoration_script(form_data)
-      # 生成 JavaScript 來恢復表單資料
-      script = []
-      script << "<script type=\"text/javascript\">"
-      script << "$(document).ready(function() {"
-      script << "  setTimeout(function() {"
+      # 將表單資料存儲在實例變數中，供 JavaScript 使用
+      @restored_form_data_json = form_data.to_json.html_safe
       
-      form_data.each do |key, value|
-        if value.present?
-          script << "    var field = $('[name=\"#{key}\"]');"
-          script << "    if (field.length > 0) {"
-          script << "      field.val('#{value.gsub("'", "\\'")}');"
-          script << "      field.trigger('change');"
-          script << "    }"
-        end
-      end
-      
-      script << "  }, 100);"
-      script << "});"
-      script << "</script>"
-      
-      # 將腳本添加到 content_for :header_tags
-      content_for :header_tags, script.join("\n").html_safe
+      # 設定 JavaScript 變數
+      @form_restoration_script = "<script>var restoredFormDataJson = '#{form_data.to_json.gsub("'", "\\'")}';</script>".html_safe
     end
   end
 end
