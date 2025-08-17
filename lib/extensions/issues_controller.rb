@@ -151,8 +151,9 @@ module Extensions
       # 將表單資料存儲在實例變數中，供 JavaScript 使用
       @restored_form_data_json = form_data.to_json.html_safe
       
-      # 設定 JavaScript 變數
-      @form_restoration_script = "<script>var restoredFormDataJson = '#{form_data.to_json.gsub("'", "\\'")}';</script>".html_safe
+      # 設定 JavaScript 變數，使用更安全的方式
+      escaped_json = form_data.to_json.gsub("'", "\\'").gsub('"', '\\"')
+      @form_restoration_script = "<script type=\"text/javascript\">var restoredFormDataJson = '#{escaped_json}';</script>".html_safe
     end
   end
 end

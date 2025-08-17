@@ -38,7 +38,7 @@ Redmine::Plugin.register :data_protection_guard do
        caption: :label_data_protection, html: { class: 'icon icon-security' }
 
   # 載入 JavaScript 檔案
-  require_relative 'app/assets/javascripts/form_retention'
+  # 註解掉，因為 JavaScript 檔案會通過 asset pipeline 自動載入
 
   # 設定
   settings default: {
