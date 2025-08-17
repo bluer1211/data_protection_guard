@@ -1,6 +1,6 @@
-# Redmine Data Protection Guard Plugin .gitignore
+# Redmine Plugin .gitignore
 
-# Ruby/Rails
+# Ruby
 *.gem
 *.rbc
 /.config
@@ -38,14 +38,14 @@
 .env.test.local
 .env.production.local
 
-# IDE and Editor files
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS generated files
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -54,39 +54,25 @@
 ehthumbs.db
 Thumbs.db
 
+# Plugin specific
+/config/example_settings.yml
+/logs/
+/cache/
+
 # Backup files
-*.backup
 *.bak
-*.tmp
-*.temp
+*.backup
+*.old
 
-# Test files and reports
-/test/reports/
-/test/coverage/
-*.test.rb
+# Development and testing files
+backup/
 test_*.rb
-*_test.rb
-
-# Documentation build files
-/doc/
-/docs/_build/
-
-# Database files
-*.sqlite3
-*.db
-
-# Log files
-*.log
-logs/
+*_REPORT.md
+*_FIX*.md
+quick_test.rb
+verify_*.rb
+fix_*.rb
 
 # Temporary files
-temp/
-tmp/
-
-# Plugin specific
-config/settings.yml
-config/database.yml
-config/application.yml
-
-# Keep example configs
-!config/example_*.yml
+*.tmp
+*.temp
