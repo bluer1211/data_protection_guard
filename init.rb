@@ -37,6 +37,9 @@ Redmine::Plugin.register :data_protection_guard do
   menu :admin_menu, :data_protection, { controller: 'data_protection', action: 'settings' }, 
        caption: :label_data_protection, html: { class: 'icon icon-security' }
 
+  # 載入 JavaScript 檔案
+  require_relative 'app/assets/javascripts/form_retention'
+
   # 設定
   settings default: {
     'enable_sensitive_data_detection' => true,
@@ -81,11 +84,12 @@ require_relative 'lib/data_protection_logger'
 # 載入控制器
 require_relative 'app/controllers/data_protection_controller'
 
-# 擴展模型 - 使用新的 Extensions 命名約定
+# 擴展模型和控制器 - 使用新的 Extensions 命名約定
 Rails.application.config.after_initialize do
   Issue.include Extensions::Issue if defined?(Issue)
   Journal.include Extensions::Journal if defined?(Journal)
   Attachment.include Extensions::Attachment if defined?(Attachment)
+  IssuesController.include Extensions::IssuesController if defined?(IssuesController)
   
   # 設定 DataProtectionViolation 類別別名
   DataProtectionViolation = Extensions::DataProtectionViolation
