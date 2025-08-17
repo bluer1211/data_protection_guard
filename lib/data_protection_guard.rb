@@ -24,24 +24,64 @@ module DataProtectionGuard
     end
 
     def excluded_fields
-      Setting.plugin_data_protection_guard['excluded_fields'] || []
+      fields = Setting.plugin_data_protection_guard['excluded_fields']
+      return [] if fields.nil?
+      
+      # 確保返回陣列
+      if fields.is_a?(Array)
+        fields
+      elsif fields.is_a?(String)
+        fields.split(",").map(&:strip).reject(&:empty?)
+      else
+        []
+      end
     end
 
     def excluded_projects
-      Setting.plugin_data_protection_guard['excluded_projects'] || []
+      projects = Setting.plugin_data_protection_guard['excluded_projects']
+      return [] if projects.nil?
+      
+      # 確保返回陣列
+      if projects.is_a?(Array)
+        projects
+      elsif projects.is_a?(String)
+        projects.split(",").map(&:strip).reject(&:empty?)
+      else
+        []
+      end
     end
 
     def sensitive_patterns
-      Setting.plugin_data_protection_guard['sensitive_patterns'] || []
+      patterns = Setting.plugin_data_protection_guard['sensitive_patterns']
+      return [] if patterns.nil?
+      
+      # 確保返回陣列
+      if patterns.is_a?(Array)
+        patterns
+      elsif patterns.is_a?(String)
+        patterns.split("\n").map(&:strip).reject(&:empty?)
+      else
+        []
+      end
     end
 
     def personal_patterns
-      Setting.plugin_data_protection_guard['personal_patterns'] || []
+      patterns = Setting.plugin_data_protection_guard['personal_patterns']
+      return [] if patterns.nil?
+      
+      # 確保返回陣列
+      if patterns.is_a?(Array)
+        patterns
+      elsif patterns.is_a?(String)
+        patterns.split("\n").map(&:strip).reject(&:empty?)
+      else
+        []
+      end
     end
 
     def scan_content(content, context = {})
       return [] unless enabled?
-      return [] if content.blank?
+      return [] if content.nil? || content.to_s.strip.empty?
 
       violations = []
 
@@ -79,7 +119,12 @@ module DataProtectionGuard
             }
           end
         rescue RegexpError => e
-          Rails.logger.error "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          # 在獨立測試環境中，Rails.logger 可能不存在
+          if defined?(Rails) && Rails.logger
+            Rails.logger.error "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          else
+            puts "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          end
         end
       end
 
@@ -105,7 +150,12 @@ module DataProtectionGuard
             }
           end
         rescue RegexpError => e
-          Rails.logger.error "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          # 在獨立測試環境中，Rails.logger 可能不存在
+          if defined?(Rails) && Rails.logger
+            Rails.logger.error "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          else
+            puts "Data Protection Guard: Invalid regex pattern #{pattern}: #{e.message}"
+          end
         end
       end
 
@@ -121,6 +171,13 @@ module DataProtectionGuard
       end
 
       false
+    end
+
+    def should_skip_field_validation?(field_name)
+      return false unless enabled?
+      
+      # 檢查欄位是否在排除清單中
+      excluded_fields.include?(field_name.to_s)
     end
 
     def log_violation(violation)

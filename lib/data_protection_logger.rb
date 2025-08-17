@@ -48,11 +48,11 @@ module DataProtectionLogger
     private
 
     def get_client_ip
-      RequestStore.store[:request]&.remote_ip || 'unknown'
+      defined?(RequestStore) ? RequestStore.store[:request]&.remote_ip : 'unknown'
     end
 
     def get_user_agent
-      RequestStore.store[:request]&.user_agent || 'unknown'
+      defined?(RequestStore) ? RequestStore.store[:request]&.user_agent : 'unknown'
     end
 
     def save_to_database(log_entry)

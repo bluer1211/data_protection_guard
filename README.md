@@ -135,14 +135,40 @@ ssh://[^\s]+
 ## 故障排除
 
 ### 常見問題
-1. **正則表達式錯誤**: 使用測試工具驗證語法
-2. **誤判問題**: 調整偵測規則或使用排除設定
-3. **效能問題**: 減少檢查的檔案大小限制
+
+#### 筆記欄位沒有被偵測到個人資料
+**問題描述**: 在問題的筆記（notes）欄位中輸入個人資料（如身分證號 A123456789）時，沒有被偵測到。
+
+**原因**: `should_skip_validation?` 方法沒有檢查 `excluded_fields` 設定，導致欄位排除功能無法正常工作。
+
+**解決方案**: 
+1. 已修復 `DataProtectionGuard` 模組，新增 `should_skip_field_validation?` 方法
+2. 更新所有擴展模組（Issue、Journal、Attachment）使用新的欄位檢查方法
+3. 確保 `excluded_fields` 設定正確應用
+
+**驗證方法**:
+```ruby
+# 檢查 notes 欄位是否被排除
+DataProtectionGuard.should_skip_field_validation?('notes')
+
+# 測試個人資料偵測
+test_content = "包含身分證號 A123456789 的內容"
+violations = DataProtectionGuard.scan_personal_data(test_content)
+```
+
+#### 正則表達式錯誤
+使用測試工具驗證語法，確保正則表達式格式正確。
+
+#### 誤判問題
+調整偵測規則或使用排除設定來避免誤判。
+
+#### 效能問題
+減少檢查的檔案大小限制，或排除不必要的欄位。
 
 ### 日誌檢查
-- 查看 Rails 日誌檔案
-- 檢查資料保護日誌頁面
-- 確認設定是否正確
+- 查看違規日誌了解偵測情況
+- 檢查設定是否正確載入
+- 確認模型擴展是否正常運作
 
 ## 開發資訊
 

@@ -1,40 +1,39 @@
-<div class="box tabular settings">
-  <p>
-    <label><%= l(:label_enable_sensitive_data_detection) %></label>
-    <%= check_box_tag 'settings[enable_sensitive_data_detection]', 1, @settings['enable_sensitive_data_detection'] %>
-    <em class="info"><%= l(:text_sensitive_data_detection_info) %></em>
-  </p>
+# frozen_string_literal: true
 
-  <p>
-    <label><%= l(:label_enable_personal_data_detection) %></label>
-    <%= check_box_tag 'settings[enable_personal_data_detection]', 1, @settings['enable_personal_data_detection'] %>
-    <em class="info"><%= l(:text_personal_data_detection_info) %></em>
-  </p>
+<div class="data-protection-settings">
+  <fieldset class="box">
+    <legend><%= l(:label_general_settings) %></legend>
+    <p>
+      <label><%= l(:label_enable_sensitive_data_detection) %></label>
+      <%= check_box_tag 'settings[enable_sensitive_data_detection]', '1', @settings['enable_sensitive_data_detection'] %>
+      <em class="info"><%= l(:text_enable_sensitive_data_detection_info) %></em>
+    </p>
 
-  <p>
-    <label><%= l(:label_block_submission) %></label>
-    <%= check_box_tag 'settings[block_submission]', 1, @settings['block_submission'] %>
-    <em class="info"><%= l(:text_block_submission_info) %></em>
-  </p>
+    <p>
+      <label><%= l(:label_enable_personal_data_detection) %></label>
+      <%= check_box_tag 'settings[enable_personal_data_detection]', '1', @settings['enable_personal_data_detection'] %>
+      <em class="info"><%= l(:text_enable_personal_data_detection_info) %></em>
+    </p>
 
-  <p>
-    <label><%= l(:label_log_violations) %></label>
-    <%= check_box_tag 'settings[log_violations]', 1, @settings['log_violations'] %>
-    <em class="info"><%= l(:text_log_violations_info) %></em>
-  </p>
+    <p>
+      <label><%= l(:label_block_submission) %></label>
+      <%= check_box_tag 'settings[block_submission]', '1', @settings['block_submission'] %>
+      <em class="info"><%= l(:text_block_submission_info) %></em>
+    </p>
 
-  <p>
-    <label><%= l(:label_log_to_database) %></label>
-    <%= check_box_tag 'settings[log_to_database]', 1, @settings['log_to_database'] %>
-    <em class="info"><%= l(:text_log_to_database_info) %></em>
-  </p>
+    <p>
+      <label><%= l(:label_log_violations) %></label>
+      <%= check_box_tag 'settings[log_violations]', '1', @settings['log_violations'] %>
+      <em class="info"><%= l(:text_log_violations_info) %></em>
+    </p>
+  </fieldset>
 
   <fieldset class="box">
     <legend><%= l(:label_sensitive_data_patterns) %></legend>
     <p>
       <label><%= l(:label_sensitive_patterns) %></label>
       <%= text_area_tag 'settings[sensitive_patterns]', 
-          @settings['sensitive_patterns'].join("\n"), 
+          @settings['sensitive_patterns'].is_a?(Array) ? @settings['sensitive_patterns'].join("\n") : @settings['sensitive_patterns'], 
           rows: 10, 
           class: 'wiki-edit',
           placeholder: l(:text_sensitive_patterns_placeholder) %>
@@ -47,7 +46,7 @@
     <p>
       <label><%= l(:label_personal_patterns) %></label>
       <%= text_area_tag 'settings[personal_patterns]', 
-          @settings['personal_patterns'].join("\n"), 
+          @settings['personal_patterns'].is_a?(Array) ? @settings['personal_patterns'].join("\n") : @settings['personal_patterns'], 
           rows: 10, 
           class: 'wiki-edit',
           placeholder: l(:text_personal_patterns_placeholder) %>
@@ -60,7 +59,7 @@
     <p>
       <label><%= l(:label_excluded_fields) %></label>
       <%= text_field_tag 'settings[excluded_fields]', 
-          @settings['excluded_fields'].join(", "), 
+          @settings['excluded_fields'].is_a?(Array) ? @settings['excluded_fields'].join(", ") : @settings['excluded_fields'], 
           size: 50,
           placeholder: l(:text_excluded_fields_placeholder) %>
       <em class="info"><%= l(:text_excluded_fields_info) %></em>
@@ -69,7 +68,7 @@
     <p>
       <label><%= l(:label_excluded_projects) %></label>
       <%= text_field_tag 'settings[excluded_projects]', 
-          @settings['excluded_projects'].join(", "), 
+          @settings['excluded_projects'].is_a?(Array) ? @settings['excluded_projects'].join(", ") : @settings['excluded_projects'], 
           size: 50,
           placeholder: l(:text_excluded_projects_placeholder) %>
       <em class="info"><%= l(:text_excluded_projects_info) %></em>
@@ -108,7 +107,7 @@
       }
       
       $.ajax({
-        url: '<%= url_for(action: :test_pattern) %>',
+        url: '<%= url_for(controller: "data_protection", action: "test_pattern") %>',
         type: 'POST',
         data: {
           content: content,

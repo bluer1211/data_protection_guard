@@ -58,8 +58,8 @@ Redmine::Plugin.register :data_protection_guard do
     ],
     'personal_patterns' => [
       '\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b',  # 姓名
-      '\\b[A-Z]\\d{9}\\b',  # 身分證號
-      '\\b[A-Z]\\d{8}\\b',  # 護照號碼
+      '[A-Z]\\d{9}',  # 身分證號（移除單詞邊界以支援中文環境）
+      '[A-Z]\\d{8}',  # 護照號碼（移除單詞邊界以支援中文環境）
       '\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b',  # 信用卡號
       '\\b\\d{10,16}\\b',  # 銀行帳號
       '\\b\\d{2,4}-\\d{3,4}-\\d{4}\\b',  # 電話號碼
@@ -67,32 +67,26 @@ Redmine::Plugin.register :data_protection_guard do
       '\\b\\d{4}-\\d{2}-\\d{2}\\b',  # 出生日期
       '\\b(?:台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)[^\\s]*\\b'  # 台灣地址
     ],
-    'excluded_fields' => ['subject', 'tracker_id', 'status_id', 'priority_id'],
+    'excluded_fields' => ['tracker_id', 'status_id', 'priority_id'],  # notes 欄位沒有被排除，應該被檢查
     'excluded_projects' => []
   }, partial: 'settings/data_protection_settings'
 end
 
-# 載入插件檔案
+# 載入核心模組
 require_relative 'lib/data_protection_guard'
 require_relative 'lib/sensitive_data_validator'
 require_relative 'lib/personal_data_validator'
 require_relative 'lib/data_protection_logger'
 
-Rails.application.reloader.to_prepare do
-  # 載入控制器
-  require_relative 'app/controllers/data_protection_controller'
+# 載入控制器
+require_relative 'app/controllers/data_protection_controller'
+
+# 擴展模型 - 使用新的 Extensions 命名約定
+Rails.application.config.after_initialize do
+  Issue.include Extensions::Issue if defined?(Issue)
+  Journal.include Extensions::Journal if defined?(Journal)
+  Attachment.include Extensions::Attachment if defined?(Attachment)
   
-  # 載入模型擴展
-  require_relative 'lib/extensions/issue'
-  require_relative 'lib/extensions/journal'
-  require_relative 'lib/extensions/attachment'
-  
-  # 載入驗證器
-  require_relative 'lib/sensitive_data_validator'
-  require_relative 'lib/personal_data_validator'
-  
-  # 擴展模型
-  Issue.include DataProtectionGuard::IssueExtension if defined?(Issue)
-  Journal.include DataProtectionGuard::JournalExtension if defined?(Journal)
-  Attachment.include DataProtectionGuard::AttachmentExtension if defined?(Attachment)
+  # 設定 DataProtectionViolation 類別別名
+  DataProtectionViolation = Extensions::DataProtectionViolation
 end

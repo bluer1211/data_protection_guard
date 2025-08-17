@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module DataProtectionGuard
-  module JournalExtension
+module Extensions
+  module Journal
     extend ActiveSupport::Concern
 
     included do
@@ -13,30 +13,27 @@ module DataProtectionGuard
     def should_check_data_protection?
       return false unless DataProtectionGuard.enabled?
       return false if DataProtectionGuard.should_skip_validation?(self)
-      return false if new_record? && !changed?
       
-      # 檢查是否有內容變更
+      # 對於新記錄，檢查是否有實際內容
+      if new_record?
+        return notes.present?
+      end
+      
+      # 對於現有記錄，檢查是否有內容變更
       content_fields = ['notes']
-      content_fields.any? { |field| send("#{field}_changed?") }
+      content_fields.any? { |field| 
+        # 檢查欄位是否有實際變更，而不是僅僅被觸摸
+        send("#{field}_changed?") && send(field).present?
+      }
     end
 
     def check_data_protection
       violations = []
 
-      # 檢查備註欄位
-      if notes.present?
-        context = { field: 'notes', model: 'Journal', id: id, journalized_type: journalized_type, journalized_id: journalized_id }
+      # 檢查備註（如果沒有被排除）
+      if notes.present? && !DataProtectionGuard.should_skip_field_validation?('notes')
+        context = { field: 'notes', model: 'Journal', id: id }
         violations.concat(DataProtectionGuard.scan_content(notes, context))
-      end
-
-      # 檢查詳細變更
-      if details.any?
-        details.each do |detail|
-          if detail.value.present? && detail.value.is_a?(String)
-            context = { field: "detail_#{detail.prop_key}", model: 'Journal', id: id, journalized_type: journalized_type, journalized_id: journalized_id }
-            violations.concat(DataProtectionGuard.scan_content(detail.value, context))
-          end
-        end
       end
 
       # 記錄違規
@@ -50,5 +47,3 @@ module DataProtectionGuard
     end
   end
 end
-
-# 擴展會在 init.rb 中處理

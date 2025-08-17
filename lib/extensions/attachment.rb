@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module DataProtectionGuard
-  module AttachmentExtension
+module Extensions
+  module Attachment
     extend ActiveSupport::Concern
 
     included do
@@ -13,30 +13,37 @@ module DataProtectionGuard
     def should_check_data_protection?
       return false unless DataProtectionGuard.enabled?
       return false if DataProtectionGuard.should_skip_validation?(self)
-      return false if new_record? && !changed?
       
-      # 檢查是否有內容變更
+      # 對於新記錄，檢查是否有實際內容
+      if new_record?
+        return filename.present? || description.present?
+      end
+      
+      # 對於現有記錄，檢查是否有內容變更
       content_fields = ['filename', 'description']
-      content_fields.any? { |field| send("#{field}_changed?") }
+      content_fields.any? { |field| 
+        # 檢查欄位是否有實際變更，而不是僅僅被觸摸
+        send("#{field}_changed?") && send(field).present?
+      }
     end
 
     def check_data_protection
       violations = []
 
-      # 檢查檔案名稱
-      if filename.present?
+      # 檢查檔案名稱（如果沒有被排除）
+      if filename.present? && !DataProtectionGuard.should_skip_field_validation?('filename')
         context = { field: 'filename', model: 'Attachment', id: id }
         violations.concat(DataProtectionGuard.scan_content(filename, context))
       end
 
-      # 檢查檔案描述
-      if description.present?
+      # 檢查檔案描述（如果沒有被排除）
+      if description.present? && !DataProtectionGuard.should_skip_field_validation?('description')
         context = { field: 'description', model: 'Attachment', id: id }
         violations.concat(DataProtectionGuard.scan_content(description, context))
       end
 
-      # 檢查檔案內容（如果是文字檔案）
-      if readable? && text_file?
+      # 檢查檔案內容（如果是文字檔案且沒有被排除）
+      if readable? && text_file? && !DataProtectionGuard.should_skip_field_validation?('file_content')
         begin
           content = read_file_content
           if content.present?

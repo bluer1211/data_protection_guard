@@ -6,24 +6,8 @@ class DataProtectionController < ApplicationController
   before_action :find_project, only: [:logs]
 
   def settings
-    if request.post?
-      settings = params[:settings] || {}
-      
-      # 處理陣列參數
-      settings['sensitive_patterns'] = settings['sensitive_patterns'].split("\n").map(&:strip).reject(&:blank?) if settings['sensitive_patterns'].present?
-      settings['personal_patterns'] = settings['personal_patterns'].split("\n").map(&:strip).reject(&:blank?) if settings['personal_patterns'].present?
-      settings['excluded_fields'] = settings['excluded_fields'].split(",").map(&:strip).reject(&:blank?) if settings['excluded_fields'].present?
-      settings['excluded_projects'] = settings['excluded_projects'].split(",").map(&:strip).reject(&:blank?) if settings['excluded_projects'].present?
-      
-      # 轉換布林值
-      ['enable_sensitive_data_detection', 'enable_personal_data_detection', 'block_submission', 'log_violations', 'log_to_database'].each do |key|
-        settings[key] = settings[key] == '1'
-      end
-
-      Setting.plugin_data_protection_guard = settings
-      flash[:notice] = l(:notice_successful_update)
-      redirect_to plugin_settings_path('data_protection_guard')
-    end
+    # 重定向到 Redmine 的標準插件設定頁面
+    redirect_to plugin_settings_path('data_protection_guard')
   end
 
   def logs

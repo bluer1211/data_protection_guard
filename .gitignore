@@ -1,10 +1,6 @@
-# Redmine 外掛程式 .gitignore
+# Redmine Data Protection Guard Plugin .gitignore
 
-# 系統檔案
-.DS_Store
-Thumbs.db
-
-# Ruby 相關
+# Ruby/Rails
 *.gem
 *.rbc
 /.config
@@ -17,33 +13,80 @@ Thumbs.db
 /test/version_tmp/
 /tmp/
 
-# 忽略已存在的 .bundle/
-/.bundle
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
 
-# 日誌檔案
-*.log
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
 
-# 資料庫檔案
-*.sqlite3
-*.db
+# Ignore uploaded files in development.
+/storage/*
+!/storage/.keep
 
-# 暫存檔案
-*.tmp
-*.temp
+# Ignore master key for decrypting credentials and more.
+/config/master.key
 
-# IDE 檔案
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# 環境變數檔案
-.env
-.env.local
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# 測試覆蓋率報告
-coverage/
+# Backup files
+*.backup
+*.bak
+*.tmp
+*.temp
 
-# 暫存目錄
-tmp/
+# Test files and reports
+/test/reports/
+/test/coverage/
+*.test.rb
+test_*.rb
+*_test.rb
+
+# Documentation build files
+/doc/
+/docs/_build/
+
+# Database files
+*.sqlite3
+*.db
+
+# Log files
+*.log
+logs/
+
+# Temporary files
 temp/
+tmp/
+
+# Plugin specific
+config/settings.yml
+config/database.yml
+config/application.yml
+
+# Keep example configs
+!config/example_*.yml
