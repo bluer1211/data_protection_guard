@@ -164,6 +164,9 @@ module Extensions
       # 設定 JavaScript 變數，使用更安全的方式
       escaped_json = form_data.to_json.gsub("'", "\\'").gsub('"', '\\"')
       @form_restoration_script = "<script type=\"text/javascript\">var restoredFormDataJson = '#{escaped_json}';</script>".html_safe
+      
+      # 設定一個標記，表示需要載入恢復腳本
+      @load_form_restoration_script = true
     end
   end
 end

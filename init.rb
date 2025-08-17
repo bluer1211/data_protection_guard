@@ -39,6 +39,7 @@ Redmine::Plugin.register :data_protection_guard do
 
   # 載入 JavaScript 檔案
   # 註解掉，因為 JavaScript 檔案會通過 asset pipeline 自動載入
+  # 但是我們需要確保 JavaScript 檔案被正確載入
 
   # 設定
   settings default: {
