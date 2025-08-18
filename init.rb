@@ -37,6 +37,10 @@ Redmine::Plugin.register :data_protection_guard do
   menu :admin_menu, :data_protection, { controller: 'data_protection', action: 'settings' }, 
        caption: :label_data_protection, html: { class: 'icon icon-security' }
 
+  # 添加日誌選單
+  menu :admin_menu, :data_protection_logs, { controller: 'data_protection', action: 'logs' }, 
+       caption: :label_data_protection_logs, html: { class: 'icon icon-report' }
+
   # 載入 JavaScript 檔案
   # 註解掉，因為 JavaScript 檔案會通過 asset pipeline 自動載入
   # 但是我們需要確保 JavaScript 檔案被正確載入
@@ -47,6 +51,7 @@ Redmine::Plugin.register :data_protection_guard do
     'enable_personal_data_detection' => true,
     'block_submission' => true,
     'log_violations' => true,
+    'log_to_database' => true,
     'sensitive_patterns' => [
       'ftp://[^\\s]+',
       'sftp://[^\\s]+',

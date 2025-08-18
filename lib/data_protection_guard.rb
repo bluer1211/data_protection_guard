@@ -180,10 +180,10 @@ module DataProtectionGuard
       excluded_fields.include?(field_name.to_s)
     end
 
-    def log_violation(violation)
+    def log_violation(violation, request = nil)
       return unless log_violations?
 
-      DataProtectionLogger.log_violation(violation)
+      DataProtectionLogger.log_violation(violation, request)
     end
 
     def generate_error_message(violations)

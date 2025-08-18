@@ -2,7 +2,7 @@
 
 module DataProtectionLogger
   class << self
-    def log_violation(violation)
+    def log_violation(violation, request = nil)
       return unless violation.is_a?(Hash)
 
       log_entry = {
@@ -13,8 +13,8 @@ module DataProtectionLogger
         match: violation[:match],
         severity: violation[:severity],
         context: violation[:context],
-        ip_address: get_client_ip,
-        user_agent: get_user_agent
+        ip_address: get_client_ip(request),
+        user_agent: get_user_agent(request)
       }
 
       Rails.logger.warn "Data Protection Violation: #{log_entry.to_json}"
@@ -47,12 +47,38 @@ module DataProtectionLogger
 
     private
 
-    def get_client_ip
-      defined?(RequestStore) ? RequestStore.store[:request]&.remote_ip : 'unknown'
+    def get_client_ip(request = nil)
+      return 'unknown' unless request
+
+      # 優先使用 X-Forwarded-For 標頭（適用於代理環境）
+      forwarded_ip = request.env['HTTP_X_FORWARDED_FOR']
+      if forwarded_ip.present?
+        # X-Forwarded-For 可能包含多個 IP，取第一個
+        return forwarded_ip.split(',').first.strip
+      end
+
+      # 使用 X-Real-IP 標頭
+      real_ip = request.env['HTTP_X_REAL_IP']
+      return real_ip if real_ip.present?
+
+      # 使用 X-Client-IP 標頭
+      client_ip = request.env['HTTP_X_CLIENT_IP']
+      return client_ip if client_ip.present?
+
+      # 最後使用 remote_ip
+      request.remote_ip
+    rescue => e
+      Rails.logger.error "Data Protection Guard: Error getting client IP: #{e.message}"
+      'unknown'
     end
 
-    def get_user_agent
-      defined?(RequestStore) ? RequestStore.store[:request]&.user_agent : 'unknown'
+    def get_user_agent(request = nil)
+      return 'unknown' unless request
+
+      request.user_agent
+    rescue => e
+      Rails.logger.error "Data Protection Guard: Error getting user agent: #{e.message}"
+      'unknown'
     end
 
     def save_to_database(log_entry)

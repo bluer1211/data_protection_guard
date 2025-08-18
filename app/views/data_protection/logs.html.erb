@@ -1,4 +1,5 @@
 <div class="contextual">
+  <%= link_to l(:label_data_protection_settings), { action: :settings }, class: 'icon icon-settings' %>
   <%= link_to l(:label_export_csv), { format: 'csv' }, class: 'icon icon-download' %>
   <%= link_to l(:label_clear_logs), { action: :clear_logs }, method: :post, 
       data: { confirm: l(:text_confirm_clear_logs) }, class: 'icon icon-delete' %>

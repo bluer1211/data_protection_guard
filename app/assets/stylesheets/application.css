@@ -1,0 +1,110 @@
+/* Data Protection Guard Plugin Styles */
+
+.data-protection-settings {
+  margin: 20px 0;
+}
+
+.data-protection-settings fieldset {
+  margin-bottom: 20px;
+}
+
+.data-protection-settings label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.data-protection-settings .info {
+  color: #666;
+  font-style: italic;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+
+.data-protection-settings textarea {
+  width: 100%;
+  font-family: monospace;
+}
+
+.data-protection-settings input[type="text"] {
+  width: 100%;
+}
+
+.form-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.form-actions .button-positive {
+  margin-right: 10px;
+}
+
+#test-result {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+#test-result h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+#test-result ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+#test-result li {
+  margin-bottom: 5px;
+  font-family: monospace;
+  background-color: #fff;
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+
+.contextual {
+  margin-bottom: 20px;
+}
+
+.contextual a {
+  margin-right: 10px;
+}
+
+/* Logs page styles */
+.list.issues th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.list.issues td {
+  vertical-align: top;
+}
+
+.match-content {
+  word-break: break-all;
+}
+
+.context-info {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.label-important {
+  background-color: #d9534f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8em;
+}
+
+.label-warning {
+  background-color: #f0ad4e;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8em;
+}

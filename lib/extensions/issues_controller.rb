@@ -35,7 +35,7 @@ module Extensions
       
       if violations.any?
         # 記錄違規
-        violations.each { |violation| DataProtectionGuard.log_violation(violation) }
+        violations.each { |violation| DataProtectionGuard.log_violation(violation, request) }
         
         # 生成錯誤訊息
         error_message = DataProtectionGuard.generate_error_message(violations)
@@ -51,7 +51,13 @@ module Extensions
           redirect_to edit_issue_path(@issue)
         else
           # 如果是新建 issue，重新導向到新建頁面
-          redirect_to new_project_issue_path(@project)
+          if @project
+            redirect_to new_project_issue_path(@project)
+          else
+            # 如果沒有專案，重定向到專案列表或首頁
+            flash[:error] = "無法確定專案，請重新選擇專案"
+            redirect_to projects_path
+          end
         end
         return
       end
@@ -81,7 +87,7 @@ module Extensions
       
       if violations.any?
         # 記錄違規
-        violations.each { |violation| DataProtectionGuard.log_violation(violation) }
+        violations.each { |violation| DataProtectionGuard.log_violation(violation, request) }
         
         # 生成錯誤訊息
         error_message = DataProtectionGuard.generate_error_message(violations)
@@ -97,7 +103,13 @@ module Extensions
           redirect_to edit_issue_path(@issue)
         else
           # 如果是新建 issue，重新導向到新建頁面
-          redirect_to new_project_issue_path(@project)
+          if @project
+            redirect_to new_project_issue_path(@project)
+          else
+            # 如果沒有專案，重定向到專案列表或首頁
+            flash[:error] = "無法確定專案，請重新選擇專案"
+            redirect_to projects_path
+          end
         end
         return
       end

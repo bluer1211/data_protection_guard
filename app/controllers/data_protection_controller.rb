@@ -3,11 +3,16 @@
 class DataProtectionController < ApplicationController
   before_action :require_admin, except: [:logs]
   before_action :authorize_global, except: [:logs]
-  before_action :find_project, only: [:logs]
 
   def settings
-    # 重定向到 Redmine 的標準插件設定頁面
-    redirect_to plugin_settings_path('data_protection_guard')
+    # 顯示自訂設定頁面，而不是重定向
+    @settings = Setting.plugin_data_protection_guard
+    
+    if request.post?
+      Setting.plugin_data_protection_guard = params[:settings]
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to action: :settings
+    end
   end
 
   def logs
@@ -26,7 +31,7 @@ class DataProtectionController < ApplicationController
       days = 30 if days <= 0
       
       DataProtectionLogger.clear_old_logs(days)
-      flash[:notice] = "已清除 #{days} 天前的日誌記錄"
+      flash[:notice] = l(:text_logs_cleared, days: days)
     end
     
     redirect_to action: :logs
@@ -50,13 +55,13 @@ class DataProtectionController < ApplicationController
         rescue RegexpError => e
           render json: {
             success: false,
-            error: "正則表達式錯誤: #{e.message}"
+            error: l(:text_regex_error, message: e.message)
           }
         end
       else
         render json: {
           success: false,
-          error: "請提供內容和正則表達式"
+          error: l(:text_please_provide_content_and_pattern)
         }
       end
     end
@@ -79,12 +84,12 @@ class DataProtectionController < ApplicationController
     require 'csv'
     
     CSV.generate(headers: true) do |csv|
-      csv << ['時間', '使用者', '類型', '匹配內容', '嚴重程度', 'IP位址', '上下文']
+      csv << [l(:field_created_on), l(:field_user), l(:field_violation_type), l(:field_match), l(:field_severity), l(:field_ip_address), l(:field_context)]
       
       violations.each do |violation|
         csv << [
           violation.created_at,
-          violation.user&.name || '未知',
+          violation.user&.name || l(:label_unknown),
           violation.violation_type_label,
           violation.match_content,
           violation.severity_label,
