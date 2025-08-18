@@ -57,6 +57,9 @@ en:
   text_logs_cleared: "Cleared logs older than %{days} days"
   text_regex_error: "Regular expression error: %{message}"
   text_please_provide_content_and_pattern: "Please provide content and regular expression"
+  text_defaults_loaded: "Default settings loaded successfully"
+  text_confirm_load_defaults: "Are you sure you want to load default settings? This will override all current settings."
+  text_load_defaults_info: "Load default settings will reset all settings to system defaults"
   
   field_user: "User"
   field_created_on: "Created on"
@@ -72,3 +75,4 @@ en:
   button_apply: "Apply"
   button_save: "Save"
   button_cancel: "Cancel"
+  button_load_defaults: "Load Defaults"

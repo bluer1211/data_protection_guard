@@ -5,6 +5,7 @@ RedmineApp::Application.routes.draw do
     collection do
       get :settings
       post :settings
+      post :load_defaults
       get :logs
       post :clear_logs
       post :test_pattern

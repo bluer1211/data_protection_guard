@@ -60,7 +60,17 @@
       <tbody>
         <% @violations.each do |violation| %>
           <tr class="<%= cycle('odd', 'even') %>">
-            <td><%= format_time(violation.created_at) %></td>
+            <td>
+              <% 
+                # 使用 Redmine 的時區設定來格式化時間
+                time_zone = User.current&.time_zone || Setting.find_by(name: 'time_zone')&.value || 'UTC'
+                formatted_time = violation.created_at.in_time_zone(time_zone)
+              %>
+              <%= format_time(formatted_time) %>
+              <% if time_zone != 'UTC' %>
+                <br><small class="timezone-info">(<%= time_zone %>)</small>
+              <% end %>
+            </td>
             <td>
               <% if violation.user %>
                 <%= link_to_user(violation.user) %>

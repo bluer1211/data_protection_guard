@@ -4,6 +4,10 @@
 
 <div class="contextual">
   <%= link_to l(:label_data_protection_logs), { action: :logs }, class: 'icon icon-report' %>
+  <%= link_to l(:button_load_defaults), { action: :load_defaults }, method: :post, 
+      class: 'icon icon-reload', 
+      data: { confirm: l(:text_confirm_load_defaults) },
+      title: l(:text_load_defaults_info) %>
 </div>
 
 <h2><%= l(:label_data_protection_settings) %></h2>
@@ -110,6 +114,9 @@
 
   <div class="form-actions">
     <%= submit_tag l(:button_save), class: 'button-positive' %>
+    <%= link_to l(:button_load_defaults), { action: :load_defaults }, method: :post, 
+        class: 'button', 
+        data: { confirm: l(:text_confirm_load_defaults) } %>
     <%= link_to l(:button_cancel), { action: :settings }, class: 'button' %>
   </div>
 <% end %>
