@@ -16,11 +16,10 @@ class DataProtectionController < ApplicationController
 
   def load_defaults
     if request.post?
-      # 載入預設值（簡化版本，只保留核心設定）
+      # 載入預設值（只保留核心設定）
       default_settings = {
         'enable_sensitive_data_detection' => true,
         'enable_personal_data_detection' => true,
-        'block_submission' => true,  # 保留但預設啟用，不在設定頁面顯示
         'log_violations' => false,
         'log_to_database' => true,
         'auto_cleanup_days' => 30
