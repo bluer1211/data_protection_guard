@@ -64,8 +64,7 @@ Thumbs.db
 *.backup
 *.old
 
-# Development and testing files
-backup/
+# Development and testing files (keep backup/ for development history)
 test_*.rb
 *_REPORT.md
 *_FIX*.md

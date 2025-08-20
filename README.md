@@ -34,6 +34,10 @@ Data Protection Guard 是一個 Redmine 插件，用於防止機敏資料與個�
 - 正則表達式測試工具
 - CSV 匯出功能
 
+## 👨‍💻 作者
+
+**Jason Liu** ([GitHub: @bluer1211](https://github.com/bluer1211))
+
 ## 🚀 快速開始
 
 ### 安裝
@@ -41,7 +45,7 @@ Data Protection Guard 是一個 Redmine 插件，用於防止機敏資料與個�
 1. **下載插件**
    ```bash
    cd /path/to/redmine/plugins
-   git clone https://github.com/bluer1211/data_protection_guard.git
+   git clone https://github.com/bluer1211/redmine-data-protection-guard.git data_protection_guard
    ```
 
 2. **執行安裝**
@@ -98,8 +102,6 @@ enable_sensitive_data_detection: true
 enable_personal_data_detection: true
 block_submission: true
 log_violations: true
-excluded_fields: ['subject']
-excluded_projects: []
 ```
 
 ### 偵測規則範例

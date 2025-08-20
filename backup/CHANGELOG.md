@@ -2,13 +2,6 @@
 
 本文件記錄 Data Protection Guard Plugin 的所有版本變更。
 
-## [1.0.1] - 2025-08-20
-
-### 更新
-- 更新作者資訊：Jason Liu (GitHub: @bluer1211)
-- 更新 GitHub 連結：https://github.com/bluer1211/redmine-data-protection-guard
-- 修正 README.md 中的作者資訊和安裝連結
-
 ## [1.0.0] - 2025-08-17
 
 ### 新增功能
