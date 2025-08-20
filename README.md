@@ -45,7 +45,7 @@ Data Protection Guard 是一個 Redmine 插件，用於防止機敏資料與個�
 1. **下載插件**
    ```bash
    cd /path/to/redmine/plugins
-   git clone https://github.com/bluer1211/redmine-data-protection-guard.git data_protection_guard
+   git clone https://github.com/bluer1211/data_protection_guard.git data_protection_guard
    ```
 
 2. **執行安裝**

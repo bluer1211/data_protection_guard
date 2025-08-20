@@ -24,7 +24,7 @@ Redmine::Plugin.register :data_protection_guard do
   author 'Jason Liu (GitHub: @bluer1211)'
   description '防止機敏資料與個人資料的提交與儲存'
   version '1.0.1'
-  url 'https://github.com/bluer1211/redmine-data-protection-guard'
+  url 'https://github.com/bluer1211/data_protection_guard'
   author_url 'https://github.com/bluer1211'
 
   # 設定權限
