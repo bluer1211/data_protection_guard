@@ -35,6 +35,7 @@ zh-TW:
   label_match: "匹配內容"
   label_severity: "嚴重程度"
   label_context: "上下文"
+  label_actions: "操作"
   
   text_enable_sensitive_data_detection_info: "啟用後將偵測 FTP/SFTP/SSH 帳號密碼、伺服器 IP、資料庫連線資訊等機敏資料"
   text_enable_personal_data_detection_info: "啟用後將偵測姓名、身分證號、電話號碼、電子郵件等個人資料"

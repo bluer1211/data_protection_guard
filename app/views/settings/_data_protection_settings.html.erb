@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 <div class="data-protection-settings">
   <fieldset class="box">
     <legend><%= l(:label_general_settings) %></legend>
@@ -16,7 +14,7 @@
     </p>
 
     <p>
-      <label><%= l(:label_block_submission) %></label>
+      <label><%= l(:label_block_submission) %> <span class="not-implemented">（未實作）</span></label>
       <%= check_box_tag 'settings[block_submission]', '1', @settings['block_submission'] %>
       <em class="info"><%= l(:text_block_submission_info) %></em>
     </p>
@@ -91,7 +89,29 @@
       <div id="test-result-content"></div>
     </div>
   </fieldset>
+
+  <fieldset class="box">
+    <legend><%= l(:label_actions) %></legend>
+    <p>
+      <%= link_to l(:button_load_defaults), 
+          { controller: 'data_protection', action: 'load_defaults' }, 
+          method: :post, 
+          class: 'button',
+          data: { confirm: l(:text_confirm_load_defaults) },
+          title: l(:text_load_defaults_info) %>
+      <em class="info"><%= l(:text_load_defaults_info) %></em>
+    </p>
+  </fieldset>
 </div>
+
+<style>
+.not-implemented {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  font-weight: normal;
+}
+</style>
 
 <%= javascript_tag do %>
   $(document).ready(function() {
