@@ -16,47 +16,14 @@ class DataProtectionController < ApplicationController
 
   def load_defaults
     if request.post?
-      # 載入預設值（使用優化後的模式）
+      # 載入預設值（簡化版本，只保留核心設定）
       default_settings = {
         'enable_sensitive_data_detection' => true,
         'enable_personal_data_detection' => true,
-        'block_submission' => true,
+        'block_submission' => true,  # 保留但預設啟用，不在設定頁面顯示
         'log_violations' => false,
         'log_to_database' => true,
-        'auto_cleanup_days' => 30,
-        'sensitive_patterns' => [
-          # 網路協議連接字串
-          '(?:ftp|sftp|ssh)://[^\\s]+',
-          
-          # 認證資訊
-          '\\b(?:password|pwd|passwd|api_key|api_token|access_token|secret_key)\\s*[:=]\\s*[^\\s]+',
-          
-          # 私有網路位址
-          '\\b(?:192\\.168\\.|10\\.|172\\.(?:1[6-9]|2[0-9]|3[0-1])\\.)\\d+\\.\\d+\\b',
-          '\\b(?:localhost|127\\.0\\.0\\.1)\\b',
-          
-          # 系統管理員帳號
-          '\\b(?:root@|admin@)[^\\s]+',
-          
-          # 資料庫連接字串
-          '\\b(?:mysql|postgresql|mongodb)://[^\\s]+',
-          
-          # 加密憑證
-          '\\b(?:BEGIN|END)\\s+(?:RSA|DSA|EC)\\s+PRIVATE KEY\\b',
-          '\\b(?:BEGIN|END)\\s+CERTIFICATE\\b'
-        ],
-        'personal_patterns' => [
-          # 身分證號（台灣格式）
-          '(?<![A-Za-z0-9])[A-Z][1-2]\\d{8}(?![A-Za-z0-9])',
-          
-          # 電子郵件地址
-          '(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?![A-Za-z0-9._%+-])',
-          
-          # 台灣手機號碼（排除身分證號）
-          '(?<!\\d)09\\d{2}-?\\d{3}-?\\d{3}(?!\\d)'
-        ],
-        'excluded_fields' => ['tracker_id', 'status_id', 'priority_id'],
-        'excluded_projects' => []
+        'auto_cleanup_days' => 30
       }
       
       Setting.plugin_data_protection_guard = default_settings
