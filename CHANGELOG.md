@@ -2,7 +2,7 @@
 
 本文件記錄 Data Protection Guard Plugin 的所有版本變更。
 
-## [1.0.1] - 2025-08-20
+## [1.0.1] - 2025-08-20 11:40:05 CST
 
 ### 更新
 - 更新作者資訊：Jason Liu (GitHub: @bluer1211)
