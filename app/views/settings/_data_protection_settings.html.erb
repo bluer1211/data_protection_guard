@@ -24,6 +24,19 @@
       <%= check_box_tag 'settings[log_violations]', '1', @settings['log_violations'] %>
       <em class="info"><%= l(:text_log_violations_info) %></em>
     </p>
+
+    <p>
+      <label><%= l(:label_log_to_database) %></label>
+      <%= check_box_tag 'settings[log_to_database]', '1', @settings['log_to_database'] %>
+      <em class="info"><%= l(:text_log_to_database_info) %></em>
+    </p>
+
+    <p>
+      <label><%= l(:label_auto_cleanup_days) %></label>
+      <%= number_field_tag 'settings[auto_cleanup_days]', @settings['auto_cleanup_days'], 
+          min: 1, max: 365, size: 5 %>
+      <em class="info"><%= l(:text_auto_cleanup_days_info) %></em>
+    </p>
   </fieldset>
 
   <fieldset class="box">
@@ -100,6 +113,14 @@
           data: { confirm: l(:text_confirm_load_defaults) },
           title: l(:text_load_defaults_info) %>
       <em class="info"><%= l(:text_load_defaults_info) %></em>
+    </p>
+    
+    <p>
+      <%= link_to l(:label_data_protection_logs), 
+          { controller: 'data_protection', action: 'logs' }, 
+          class: 'button icon icon-report',
+          title: l(:text_view_violation_logs) %>
+      <em class="info"><%= l(:text_view_violation_logs_info) %></em>
     </p>
   </fieldset>
 </div>
