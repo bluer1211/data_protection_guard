@@ -14,80 +14,22 @@
     </p>
 
     <p>
-      <label><%= l(:label_block_submission) %></label>
-      <%= check_box_tag 'settings[block_submission]', '1', @settings['block_submission'] %>
-      <em class="info"><%= l(:text_block_submission_info) %></em>
-    </p>
-
-    <p>
       <label><%= l(:label_log_violations) %></label>
       <%= check_box_tag 'settings[log_violations]', '1', @settings['log_violations'] %>
       <em class="info"><%= l(:text_log_violations_info) %></em>
     </p>
-  </fieldset>
 
-  <fieldset class="box">
-    <legend><%= l(:label_sensitive_data_patterns) %></legend>
     <p>
-      <label><%= l(:label_sensitive_patterns) %></label>
-      <%= text_area_tag 'settings[sensitive_patterns]', 
-          @settings['sensitive_patterns'].is_a?(Array) ? @settings['sensitive_patterns'].join("\n") : @settings['sensitive_patterns'], 
-          rows: 10, 
-          class: 'wiki-edit',
-          placeholder: l(:text_sensitive_patterns_placeholder) %>
-      <em class="info"><%= l(:text_sensitive_patterns_info) %></em>
-    </p>
-  </fieldset>
-
-  <fieldset class="box">
-    <legend><%= l(:label_personal_data_patterns) %></legend>
-    <p>
-      <label><%= l(:label_personal_patterns) %></label>
-      <%= text_area_tag 'settings[personal_patterns]', 
-          @settings['personal_patterns'].is_a?(Array) ? @settings['personal_patterns'].join("\n") : @settings['personal_patterns'], 
-          rows: 10, 
-          class: 'wiki-edit',
-          placeholder: l(:text_personal_patterns_placeholder) %>
-      <em class="info"><%= l(:text_personal_patterns_info) %></em>
-    </p>
-  </fieldset>
-
-  <fieldset class="box">
-    <legend><%= l(:label_exclusions) %></legend>
-    <p>
-      <label><%= l(:label_excluded_fields) %></label>
-      <%= text_field_tag 'settings[excluded_fields]', 
-          @settings['excluded_fields'].is_a?(Array) ? @settings['excluded_fields'].join(", ") : @settings['excluded_fields'], 
-          size: 50,
-          placeholder: l(:text_excluded_fields_placeholder) %>
-      <em class="info"><%= l(:text_excluded_fields_info) %></em>
+      <label><%= l(:label_log_to_database) %></label>
+      <%= check_box_tag 'settings[log_to_database]', '1', @settings['log_to_database'] %>
+      <em class="info"><%= l(:text_log_to_database_info) %></em>
     </p>
 
     <p>
-      <label><%= l(:label_excluded_projects) %></label>
-      <%= text_field_tag 'settings[excluded_projects]', 
-          @settings['excluded_projects'].is_a?(Array) ? @settings['excluded_projects'].join(", ") : @settings['excluded_projects'], 
-          size: 50,
-          placeholder: l(:text_excluded_projects_placeholder) %>
-      <em class="info"><%= l(:text_excluded_projects_info) %></em>
+      <label><%= l(:label_auto_cleanup_days) %></label>
+      <%= number_field_tag 'settings[auto_cleanup_days]', @settings['auto_cleanup_days'], min: 1, max: 365, size: 5 %>
+      <em class="info"><%= l(:text_auto_cleanup_days_info) %></em>
     </p>
-  </fieldset>
-
-  <fieldset class="box">
-    <legend><%= l(:label_test_pattern) %></legend>
-    <p>
-      <label><%= l(:label_test_content) %></label>
-      <%= text_area_tag 'test_content', '', rows: 5, class: 'wiki-edit' %>
-    </p>
-    <p>
-      <label><%= l(:label_test_pattern) %></label>
-      <%= text_field_tag 'test_pattern', '', size: 50 %>
-      <%= link_to l(:button_test), '#', id: 'test-pattern-btn', class: 'button' %>
-    </p>
-    <div id="test-result" style="display: none;">
-      <h4><%= l(:label_test_result) %></h4>
-      <div id="test-result-content"></div>
-    </div>
   </fieldset>
 
   <fieldset class="box">

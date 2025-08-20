@@ -35,6 +35,8 @@ en:
   label_match: "Match Content"
   label_severity: "Severity"
   label_context: "Context"
+  label_actions: "Actions"
+  label_auto_cleanup_days: "Auto Cleanup Days"
   
   text_enable_sensitive_data_detection_info: "Enable detection of FTP/SFTP/SSH credentials, server IPs, database connection info, etc."
   text_enable_personal_data_detection_info: "Enable detection of names, ID numbers, phone numbers, email addresses, etc."
@@ -43,6 +45,7 @@ en:
   text_block_submission_info: "Block submission of content containing sensitive or personal data"
   text_log_violations_info: "Log all violation events to log files"
   text_log_to_database_info: "Log violation events to database for querying"
+  text_auto_cleanup_days_info: "Set the number of days for auto cleanup. Records older than this will be automatically deleted (1-365 days)"
   text_sensitive_patterns_placeholder: "One regular expression per line, e.g.:\nftp://[^\\s]+\npassword\\s*[:=]\\s*[^\\s]+"
   text_personal_patterns_placeholder: "One regular expression per line, e.g.:\n\\b[A-Z]\\d{9}\\b\n\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b"
   text_sensitive_patterns_info: "Regular expressions for detecting sensitive data, one per line"
