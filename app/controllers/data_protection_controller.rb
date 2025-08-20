@@ -4,16 +4,6 @@ class DataProtectionController < ApplicationController
   before_action :require_admin, except: [:logs]
   before_action :authorize_global, except: [:logs]
 
-  def settings
-    @settings = Setting.plugin_data_protection_guard
-    
-    if request.post?
-      Setting.plugin_data_protection_guard = params[:settings]
-      flash[:notice] = l(:notice_successful_update)
-      redirect_to action: :settings
-    end
-  end
-
   def load_defaults
     if request.post?
       # 載入預設值（只保留核心設定）
@@ -27,9 +17,9 @@ class DataProtectionController < ApplicationController
       
       Setting.plugin_data_protection_guard = default_settings
       flash[:notice] = l(:text_defaults_loaded)
-      redirect_to action: :settings
+      redirect_to plugin_settings_path('data_protection_guard')
     else
-      redirect_to action: :settings
+      redirect_to plugin_settings_path('data_protection_guard')
     end
   end
 
