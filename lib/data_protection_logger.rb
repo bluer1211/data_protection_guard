@@ -42,7 +42,54 @@ module DataProtectionLogger
       return unless Setting.plugin_data_protection_guard['log_to_database']
 
       cutoff_date = days.days.ago
-      DataProtectionViolation.where('created_at < ?', cutoff_date).delete_all
+      deleted_count = DataProtectionViolation.where('created_at < ?', cutoff_date).delete_all
+      
+      Rails.logger.info "Data Protection Guard: 已清理 #{deleted_count} 筆 #{days} 天前的違規記錄"
+      
+      deleted_count
+    end
+
+    def clear_logs_by_type(violation_type, days = 30)
+      return unless Setting.plugin_data_protection_guard['log_to_database']
+
+      cutoff_date = days.days.ago
+      deleted_count = DataProtectionViolation.where(
+        violation_type: violation_type,
+        created_at: ...cutoff_date
+      ).delete_all
+      
+      Rails.logger.info "Data Protection Guard: 已清理 #{deleted_count} 筆 #{days} 天前的 #{violation_type} 違規記錄"
+      
+      deleted_count
+    end
+
+    def clear_logs_by_user(user_id, days = 30)
+      return unless Setting.plugin_data_protection_guard['log_to_database']
+
+      cutoff_date = days.days.ago
+      deleted_count = DataProtectionViolation.where(
+        user_id: user_id,
+        created_at: ...cutoff_date
+      ).delete_all
+      
+      Rails.logger.info "Data Protection Guard: 已清理使用者 #{user_id} 的 #{deleted_count} 筆 #{days} 天前的違規記錄"
+      
+      deleted_count
+    end
+
+    def get_log_statistics
+      return {} unless Setting.plugin_data_protection_guard['log_to_database']
+
+      {
+        total_count: DataProtectionViolation.count,
+        sensitive_data_count: DataProtectionViolation.sensitive_data.count,
+        personal_data_count: DataProtectionViolation.personal_data.count,
+        today_count: DataProtectionViolation.where('created_at >= ?', Date.current.beginning_of_day).count,
+        week_count: DataProtectionViolation.where('created_at >= ?', 1.week.ago).count,
+        month_count: DataProtectionViolation.where('created_at >= ?', 1.month.ago).count,
+        oldest_record: DataProtectionViolation.minimum(:created_at),
+        newest_record: DataProtectionViolation.maximum(:created_at)
+      }
     end
 
     private

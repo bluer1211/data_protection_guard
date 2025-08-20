@@ -1,4 +1,11 @@
-# Data Protection Guard Plugin v1.0.2 Release Notes
+# Data Protection Guard Plugin v1.0.3 Release Notes
+
+## 🎉 版本 1.0.3 發布
+
+### 🔧 預設設定調整
+- **日誌記錄優化**: 將「記錄違規事件」的預設值改為不勾選
+- **系統負載減少**: 減少預設的日誌檔案產生
+- **使用者體驗改善**: 提供更靈活的日誌記錄選項
 
 ## 🎉 版本 1.0.2 發布
 

@@ -8,6 +8,7 @@ RedmineApp::Application.routes.draw do
       post :load_defaults
       get :logs
       post :clear_logs
+      get :log_statistics
       post :test_pattern
     end
   end

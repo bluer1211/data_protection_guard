@@ -21,8 +21,9 @@ class DataProtectionController < ApplicationController
         'enable_sensitive_data_detection' => true,
         'enable_personal_data_detection' => true,
         'block_submission' => true,
-        'log_violations' => true,
+        'log_violations' => false,
         'log_to_database' => true,
+        'auto_cleanup_days' => 30,
         'sensitive_patterns' => [
           # 網路協議連接字串
           '(?:ftp|sftp|ssh)://[^\\s]+',
@@ -51,29 +52,8 @@ class DataProtectionController < ApplicationController
           # 電子郵件地址
           '(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?![A-Za-z0-9._%+-])',
           
-          # 信用卡號（支援空格和連字號）
-          '(?<!\\d)\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}(?!\\d)',
-          
           # 台灣手機號碼（排除身分證號）
-          '(?<!\\d)09\\d{2}-?\\d{3}-?\\d{3}(?!\\d)',
-          
-          # 銀行帳號（排除手機號碼和身分證號）
-          '(?<!\\d)(?!09\\d{8})(?!\\d{10})\\d{6,14}(?!\\d)',
-          
-          # 姓名（英文格式）
-          '\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b',
-          
-          # 護照號碼（排除身分證號格式）
-          '(?<![A-Z])[A-Z](?!\\d{8}[1-2])\\d{8}(?![A-Za-z0-9])',
-          
-          # 市話號碼（排除手機號碼）
-          '\\b(?!09\\d{8})\\d{2,4}-\\d{3,4}-\\d{4}\\b',
-          
-          # 出生日期
-          '\\b\\d{4}-\\d{2}-\\d{2}\\b',
-          
-          # 台灣地址
-          '\\b(?:台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)[^\\s]*\\b'
+          '(?<!\\d)09\\d{2}-?\\d{3}-?\\d{3}(?!\\d)'
         ],
         'excluded_fields' => ['tracker_id', 'status_id', 'priority_id'],
         'excluded_projects' => []
@@ -102,11 +82,37 @@ class DataProtectionController < ApplicationController
       days = params[:days].to_i
       days = 30 if days <= 0
       
-      DataProtectionLogger.clear_old_logs(days)
-      flash[:notice] = l(:text_logs_cleared, days: days)
+      # 根據清理類型執行不同的清理操作
+      case params[:clear_type]
+      when 'all'
+        deleted_count = DataProtectionLogger.clear_old_logs(days)
+        flash[:notice] = l(:text_logs_cleared, days: days, count: deleted_count)
+      when 'sensitive_data'
+        deleted_count = DataProtectionLogger.clear_logs_by_type('sensitive_data', days)
+        flash[:notice] = l(:text_sensitive_logs_cleared, days: days, count: deleted_count)
+      when 'personal_data'
+        deleted_count = DataProtectionLogger.clear_logs_by_type('personal_data', days)
+        flash[:notice] = l(:text_personal_logs_cleared, days: days, count: deleted_count)
+      when 'user'
+        user_id = params[:user_id].to_i
+        if user_id > 0
+          deleted_count = DataProtectionLogger.clear_logs_by_user(user_id, days)
+          flash[:notice] = l(:text_user_logs_cleared, days: days, count: deleted_count, user_id: user_id)
+        else
+          flash[:error] = l(:text_invalid_user_id)
+        end
+      else
+        deleted_count = DataProtectionLogger.clear_old_logs(days)
+        flash[:notice] = l(:text_logs_cleared, days: days, count: deleted_count)
+      end
     end
     
     redirect_to action: :logs
+  end
+
+  def log_statistics
+    @statistics = DataProtectionLogger.get_log_statistics
+    @violations = get_violations(limit: 10) # 只顯示最近 10 筆
   end
 
   def test_pattern

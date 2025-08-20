@@ -23,7 +23,7 @@ Redmine::Plugin.register :data_protection_guard do
   name 'Data Protection Guard'
   author 'Jason Liu (GitHub: @bluer1211)'
   description '防止機敏資料與個人資料的提交與儲存'
-  version '1.0.2'
+  version '1.0.4'
   url 'https://github.com/bluer1211/data_protection_guard'
   author_url 'https://github.com/bluer1211'
 
@@ -50,8 +50,9 @@ Redmine::Plugin.register :data_protection_guard do
     'enable_sensitive_data_detection' => true,
     'enable_personal_data_detection' => true,
     'block_submission' => true,
-    'log_violations' => true,
+    'log_violations' => false,
     'log_to_database' => true,
+    'auto_cleanup_days' => 30,
     'sensitive_patterns' => [
       # 網路協議連接字串
       '(?:ftp|sftp|ssh)://[^\\s]+',
@@ -80,29 +81,8 @@ Redmine::Plugin.register :data_protection_guard do
       # 電子郵件地址
       '(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?![A-Za-z0-9._%+-])',
       
-      # 信用卡號（支援空格和連字號）
-      '(?<!\\d)\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}(?!\\d)',
-      
       # 台灣手機號碼（排除身分證號）
-      '(?<!\\d)09\\d{2}-?\\d{3}-?\\d{3}(?!\\d)',
-      
-      # 銀行帳號（排除手機號碼和身分證號）
-      '(?<!\\d)(?!09\\d{8})(?!\\d{10})\\d{6,14}(?!\\d)',
-      
-      # 姓名（英文格式）
-      '\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b',
-      
-      # 護照號碼（排除身分證號格式）
-      '(?<![A-Z])[A-Z](?!\\d{8}[1-2])\\d{8}(?![A-Za-z0-9])',
-      
-      # 市話號碼（排除手機號碼）
-      '\\b(?!09\\d{8})\\d{2,4}-\\d{3,4}-\\d{4}\\b',
-      
-      # 出生日期
-      '\\b\\d{4}-\\d{2}-\\d{2}\\b',
-      
-      # 台灣地址
-      '\\b(?:台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)[^\\s]*\\b'
+      '(?<!\\d)09\\d{2}-?\\d{3}-?\\d{3}(?!\\d)'
     ],
     'excluded_fields' => ['tracker_id', 'status_id', 'priority_id'],  # notes 欄位沒有被排除，應該被檢查
     'excluded_projects' => []
