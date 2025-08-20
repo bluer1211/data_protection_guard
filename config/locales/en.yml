@@ -63,6 +63,9 @@ en:
   text_defaults_loaded: "Default settings loaded successfully"
   text_confirm_load_defaults: "Are you sure you want to load default settings? This will override all current settings."
   text_load_defaults_info: "Load default settings will reset all settings to system defaults"
+  text_auto_cleanup_days_info: "Set the number of days for automatic cleanup, records older than this will be automatically deleted (1-365 days)"
+  text_view_violation_logs: "View Violation Logs"
+  text_view_violation_logs_info: "View all data protection violation records"
   
   field_user: "User"
   field_created_on: "Created on"

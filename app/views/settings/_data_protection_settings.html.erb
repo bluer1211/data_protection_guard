@@ -27,7 +27,8 @@
 
     <p>
       <label><%= l(:label_auto_cleanup_days) %></label>
-      <%= number_field_tag 'settings[auto_cleanup_days]', @settings['auto_cleanup_days'], min: 1, max: 365, size: 5 %>
+      <%= number_field_tag 'settings[auto_cleanup_days]', @settings['auto_cleanup_days'], 
+          min: 1, max: 365, size: 5 %>
       <em class="info"><%= l(:text_auto_cleanup_days_info) %></em>
     </p>
   </fieldset>

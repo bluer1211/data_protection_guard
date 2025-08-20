@@ -67,6 +67,8 @@ zh-TW:
   text_confirm_load_defaults: "確定要載入預設值嗎？這將會覆蓋所有現有的設定。"
   text_load_defaults_info: "載入預設值將重置所有設定為系統預設值"
   text_auto_cleanup_days_info: "設定自動清理的天數，超過此天數的記錄將被自動刪除（1-365天）"
+  text_view_violation_logs: "檢視違規日誌"
+  text_view_violation_logs_info: "檢視所有資料保護違規記錄"
   
   field_user: "使用者"
   field_created_on: "建立時間"
